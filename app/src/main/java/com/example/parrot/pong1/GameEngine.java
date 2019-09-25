@@ -102,7 +102,6 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     }
 
-
     // ------------------------------
     // GAME STATE FUNCTIONS (run, stop, start)
     // ------------------------------
@@ -146,29 +145,9 @@ public class GameEngine extends SurfaceView implements Runnable {
     String personTapped="";
 
 
-
     // ********************************************************************************** 5
     // 1. Tell Android the (x,y) positions of your sprites
     public void updatePositions() {
-        // @TODO: Update the position of the sprites
-//        if (directionBallIsMoving.contentEquals("right")) {
-//            this.ballXPosition = this.ballXPosition + 10;
-//
-//            if (this.ballXPosition > this.screenWidth) {
-//                directionBallIsMoving = "left";
-//            }
-//
-//        }
-//        else if (directionBallIsMoving.contentEquals("left")) {
-//            this.ballXPosition = this.ballXPosition - 10;
-//
-//            // make ball bounce off left wall
-//            // 1. detect when you reach the left wall
-//            if (this.ballXPosition <= 0) {
-//                // 2. change the direction of the ball
-//                directionBallIsMoving = "right";
-//            }
-//        }
 
         if(directionBallIsMoving == "down"){
 
@@ -199,38 +178,7 @@ if(racketXPosition < screenWidth-300)
             this.racketXPosition = this.racketXPosition -10;
         }
 
-
-
-
         }
-       // this.racketXPosition = this.racketXPosition-10;
-
-        //racket new position
-//        if (personTapped.contentEquals("right")){
-//
-//                this.racketXPosition = this.racketXPosition + 10;
-//
-//
-//
-//                   }
-//               else if (personTapped.contentEquals("left")){
-//                       this.racketXPosition = this.racketXPosition - 10;
-//                   }
-
-
-//        else if (racketXPosition ==0 ) {
-//            this.racketXPosition = this.racketXPosition+0;
-//        }
-
-//        if (racketXPosition <= 0) {
-//            this.racketXPosition = this.racketXPosition ;
-//        }
-
-
-//        if(ballXPosition >=0) {
-//
-//            this.racketXPosition = this.racketXPosition -10;
-//        }
 
         if (ballYPosition >= this.racketYPosition-40 && this.ballXPosition > racketXPosition && ballXPosition < racketXPosition+400) {
 
@@ -242,30 +190,11 @@ if(racketXPosition < screenWidth-300)
             this.score = this.score +2;
         }
 
-
-
-
-
         // DEBUG - by outputing current positiong
         Log.d(TAG, "XPos: " + this.ballXPosition);
-
-
-
-//        this.ballYPosition = this.ballYPosition - 10;
-
-//        // LEFT:
-//        this.ballXPosition = this.ballXPosition - 10;
-//        // RIGHT:
-//        this.ballXPosition = this.ballXPosition + 10;
-//        // DOWN:
-//        this.ballYPosition = this.ballYPosition + 10;
-//        // UP:
-//        this.ballYPosition = this.ballYPosition - 10;
-
         // @TODO: Collision detection code
 
     }
-
 
 
     // ********************************************************************************** 6
