@@ -30,6 +30,7 @@ public class GameEngine extends SurfaceView implements Runnable {
     // screen size
     int screenHeight;
     int screenWidth;
+    Random rand = new Random();
     int i;
 
     // game state
@@ -53,11 +54,13 @@ public class GameEngine extends SurfaceView implements Runnable {
     // ----------------------------
     // ## SPRITES
     // ----------------------------
-    int ballXPosition;      // keep track of ball -x
-    int ballYPosition;      // keep track of ball -y
-    int racketXPosition;
-    int racketYPosition;
-    int score;
+
+    int score = 0;
+    int lives = 5;
+    int racketLengh =300;
+
+    Ball ball;
+    Racket racket;
 
     // ----------------------------
     // ## GAME STATS - number of lives, score, etc
@@ -74,21 +77,27 @@ public class GameEngine extends SurfaceView implements Runnable {
         this.screenWidth = w;
         this.screenHeight = h;
 
+ball = new Ball(this.screenWidth/2,this.screenHeight/2,40);
 
+racket = new Racket(400,1500);
         this.printScreenInfo();
 
         // @TODO: Add your sprites to this section
         // This is optional. Use it to:
         //  - setup or configure your sprites
         //  - set the initial position of your sprites
-        this.ballXPosition = this.screenWidth / 2;
-        this.ballYPosition = this.screenHeight /2;
+//        this.ballXPosition = this.screenWidth / 2;
+//        this.ballYPosition = this.screenHeight /2;
 
-        this.racketXPosition= 400;
-        this.racketYPosition =1500;
+//        this.racketXPosition = 400;
+//        this.racketYPosition =1500;
         // @TODO: Any other game setup stuff goes here
 
 
+    }
+
+    public GameEngine(Context context) {
+        super(context);
     }
 
     // ------------------------------
@@ -144,54 +153,106 @@ public class GameEngine extends SurfaceView implements Runnable {
     String directionBallIsMoving = "down";
     String personTapped="";
 
+//creating functions for oops
+    public void ballMoveUp()
+    {
+        ball.setBallypos(ball.getBallypos()-20);
+        if(ball.getBallypos() <=0)
+        {
+            directionBallIsMoving ="down";
+        }
+    }
+    public void ballMoveDown()
+    {
+        ball.setBallypos(ball.getBallypos()+20);
+        if(ball.getBallypos()>this.screenHeight){
+            directionBallIsMoving = "up";
+
+        }
+
+    }
+
+    public void racketMoveRight()
+    {
+        if(racket.getRacketXPos() < screenWidth-racketLengh){
+            racket.setRacketXPos(racket.getRacketXPos()+10);
+        }
+    }
+    public void racketMoveLeft()
+    {
+        if(racket.getRacketXPos() > 0){
+            racket.setRacketXPos(racket.getRacketXPos()-10);
+
+        }
+    }
+    public  void  ballHitsTheRacket()
+    {
+        directionBallIsMoving ="up";
+        this.score = this.score+50;
+
+    }
+
+    public void ballHittBottom()
+    {
+
+        ball.setBallXpos(this.screenWidth/2);
+        ball.setBallypos(0);
+        personTapped = "";
+        racket.setRacketXPos(400);
+        racket.setRacketYPos(1500);
+
+        directionBallIsMoving ="down";
+        score =score-35;
+    }
+    public void scoreNegative()
+    {
+        gameIsRunning =false;
+        gameThread.interrupt();
+    }
 
     // ********************************************************************************** 5
     // 1. Tell Android the (x,y) positions of your sprites
     public void updatePositions() {
 
-        if(directionBallIsMoving == "down"){
+        if(directionBallIsMoving.contentEquals("down")){
 
-                    this.ballYPosition = this.ballYPosition +20;
-
-        if(this.ballYPosition > this.screenHeight){
-
-            directionBallIsMoving = "up";
-
+            ballMoveDown();
         }
-
-        }
-        if(directionBallIsMoving == "up")
+        if(directionBallIsMoving.contentEquals("up"))
         {
-            this.ballYPosition = this.ballYPosition -20;
 
-        if(this.ballYPosition <=0)
-        {
-            directionBallIsMoving ="down";
-        }}
+            ballMoveUp();
+       }
 
         if (personTapped.contentEquals("right")){
-if(racketXPosition < screenWidth-300)
-            this.racketXPosition = this.racketXPosition + 10;
-        }
+
+            racketMoveRight();
+}
+
+
         else if (personTapped.contentEquals("left")){
-            if(racketXPosition > 0){
-            this.racketXPosition = this.racketXPosition -10;
-        }
+
+            racketMoveLeft();
 
         }
-
-        if (ballYPosition >= this.racketYPosition-40 && this.ballXPosition > racketXPosition && ballXPosition < racketXPosition+400) {
+        if (ball.getBallypos() >= racket.getRacketYPos()-40 && ball.getBallXpos() > racket.getRacketXPos() && ball.getBallXpos() < racket.getRacketXPos()+racketLengh) {
 
             // ball is touching racket
             Log.d(TAG, "Ball touched with racket");
-            directionBallIsMoving ="up";
-            this.score = this.score+1;
-            this.score = this.score+50;
-            this.score = this.score +2;
+          this.score = this.score +2;
+            ballHitsTheRacket();
+        }
+        if(ball.getBallypos() >= screenHeight-30)
+        {
+            ballHittBottom();
+        }
+        if(score < 0)
+        {
+           scoreNegative();
         }
 
         // DEBUG - by outputing current positiong
-        Log.d(TAG, "XPos: " + this.ballXPosition);
+        Log.d(TAG, "XPos: " + ball.getBallXpos());
         // @TODO: Collision detection code
 
     }
@@ -207,24 +268,25 @@ if(racketXPosition < screenWidth-300)
             // Put all your drawing code in this section
 
             // configure the drawing tools
-            this.canvas.drawColor(Color.argb(255,250,0,255));
+            //canvas.drawColor(this.score);
+            this.canvas.drawColor(Color.argb(255,0,0,255));
             paintbrush.setColor(Color.WHITE);
 
             //@TODO: Draw the sprites (rectangle, circle, etc)
 
             // 1. Draw the ball
             this.canvas.drawRect(
-                    ballXPosition,
-                    ballYPosition,
-                    ballXPosition + 50,
-                    ballYPosition + 50,
+                    ball.getBallXpos(),
+                    ball.getBallypos(),
+                    ball.getBallXpos() + 50,
+                    ball.getBallypos() + 50,
                     paintbrush);
             // this.canvas.drawRect(left, top, right, bottom, paintbrush);
 paintbrush.setColor(Color.YELLOW);
-this.canvas.drawRect(this.racketXPosition,
-        this.racketYPosition,
-        this.racketXPosition+300,
-        this.racketYPosition+30,
+this.canvas.drawRect(racket.getRacketXPos(),
+        racket.getRacketYPos(),
+        racket.getRacketXPos()+racketLengh,
+        racket.getRacketYPos()+40,
             paintbrush);
 //canvas.drawRect(400,1550,1000,1500,paintbrush);
             paintbrush.setColor(Color.BLACK);
